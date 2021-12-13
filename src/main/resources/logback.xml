@@ -18,7 +18,7 @@
             <!-- each archived file, size max 10MB -->
             <maxFileSize>10MB</maxFileSize>
             <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
-            <totalSizeCap>2GB</totalSizeCap>
+            <totalSizeCap>1GB</totalSizeCap>
             <!-- 60 days to keep -->
             <maxHistory>7</maxHistory>
         </rollingPolicy>
@@ -41,7 +41,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${HOME_LOG}/messages-archived/messages.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <!-- each archived file, size max 10MB -->
-            <maxFileSize>100MB</maxFileSize>
+            <maxFileSize>1000MB</maxFileSize>
             <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
             <totalSizeCap>20GB</totalSizeCap>
             <!-- 60 days to keep -->
@@ -54,7 +54,7 @@
         </layout>
     </appender>
 
-    <logger name="sinker" level="info">
+    <logger name="sinker" level="info" additivity="false">
         <appender-ref ref="SINKER-APPENDER"/>
     </logger>
 

@@ -3,10 +3,9 @@ package com.tangp.sourcingsearch.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tangp.sourcingsearch.service.KafkaService;
+import com.tangp.sourcingsearch.service.LogSinkService;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,8 @@ import static com.tangp.sourcingsearch.controller.MessageSinkerController.Result
 @RequestMapping("/api/1688search")
 public class MessageSinkerController {
 
-    private static final Logger sinker = LoggerFactory.getLogger("sinker");
+    @Autowired
+    private LogSinkService logSinkService;
 
     @Autowired
     private KafkaService kafkaService;
@@ -39,6 +39,8 @@ public class MessageSinkerController {
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
 
+    private static final SimpleDateFormat DAY_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
     @PostMapping("/sink")
     ResponseEntity<? extends Object> sinkMessageFromScrapy(@RequestBody String json
             , @RequestHeader(name = "Referer", required = false, defaultValue = "null") String refer
@@ -47,10 +49,9 @@ public class MessageSinkerController {
         jsonObject.put("source", source);
         jsonObject.put("refer", refer);
         jsonObject.put("sink_time", SIMPLE_DATE_FORMAT.format(new Date()));
-        json = jsonObject.toJSONString();
+        jsonObject.put("day", DAY_FORMAT.format(new Date()));
 
-        sinker.info(json);
-//        kafkaService.send("source_" + source, json);
+        logSinkService.flushReceivedJson(jsonObject);
         return ResponseEntity.ok(OK);
     }
 

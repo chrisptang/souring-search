@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -106,7 +107,11 @@ public class LogSinkService implements InitializingBean {
     }
 
     private static String buildKey(String urlPath) {
-        return urlPath.replaceAll("\\/", "_");
+        String key = urlPath.replaceAll("\\/", "_");
+        if (StringUtils.startsWithIgnoreCase(key, "_")) {
+            key = "api" + key;
+        }
+        return key;
     }
 
     private static final ConcurrentMap<String, Logger> LOGGER_CONCURRENT_MAP
